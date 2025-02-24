@@ -65,7 +65,7 @@ def save_data_to_pickle(train_data, test_data, train_file='train_data.pkl', test
     return
 
 if __name__ == '__main__':
-    with open('data.txt', 'r', encoding='utf-8') as f:
+    with open('../data/data.txt', 'r', encoding='utf-8') as f:
         lyrics = f.readlines()
 
     cleaned_text = [clean_text(line) for line in lyrics]

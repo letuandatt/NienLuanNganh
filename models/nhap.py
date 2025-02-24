@@ -1,7 +1,7 @@
 
 
 
-with open('data.txt', 'r', encoding='utf-8') as f:
+with open('../data/data.txt', 'r', encoding='utf-8') as f:
     content = f.read()
 
 print(content)
