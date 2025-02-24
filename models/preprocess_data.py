@@ -17,23 +17,31 @@ def clean_text(text):
 
     return text
 
+# Tạo cặp dữ liệu
+themes = {
+    "Bài hát về tình yêu đôi lứa": ["yêu", "thương", "vấn vương", "hẹn", "đợi", "nhớ", "thầm"],
+    "Bài hát về thiên nhiên và phong cảnh đồng quê": ["nắng", "gió", "mưa", "trắng", "cây", "bông", "nước"],
+    "Bài hát về sự nhớ nhung và xa cách": ["nhớ", "xa cách", "xa", "thương nhớ", "vấn vương", "đợi chờ"],
+    "Bài hát về sự lãng mạn và hẹn hò": ["lãng mạn", "hẹn", "tình yêu", "hẹn hò"],
+    "Bài hát về sự buồn bã và cô đơn": ["buồn", "cô đơn", "đau", "vắng lặng"],
+    "Bài hát về sự chờ đợi và hy vọng": ["chờ", "hy vọng", "niềm tin", "tương lai", "mong", "đón"]
+}
+
+def add_themes(text, themes):
+    pairs = []
+
+    for theme, keywords in themes.items():
+        if any(keyword in text for keyword in keywords):
+            pairs.append((theme, text))
+
+    return pairs
+
 # Phan tach cau thanh cac nhip
 def split_into_phrases(text):
     # Ngat nhip bang cac dau ngat cau nhu dau cham, phay
     phrases = re.split(r'[.,]', text)  # Tách theo dấu chấm và dấu phẩy
     phrases = [phrase.strip() for phrase in phrases if phrase]  # Xóa khoảng trắng và bỏ phần rỗng
     return phrases
-
-# Tao cap du lieu
-def create_pairs(phrases):
-    pairs = []
-    for phrase in phrases:
-        for i in range(len(phrase) - 1):
-            input_text = phrase[i]
-            target_text = phrase[i + 1]
-            pairs.append((input_text, target_text))
-    return pairs
-
 
 # Tai tokenizer
 tokenizer = T5Tokenizer.from_pretrained('VietAI/vit5-base')
@@ -47,7 +55,6 @@ def tokenize_text(pairs):
         tokenized_data.append((input_ids, output_ids))
     return tokenized_data
 
-
 # Lưu = pickle
 def save_data_to_pickle(train_data, test_data, train_file='train_data.pkl', test_file='test_data.pkl'):
     with open(train_file, 'wb') as f_train:
@@ -57,7 +64,6 @@ def save_data_to_pickle(train_data, test_data, train_file='train_data.pkl', test
     print('Train data saved to pickle file.')
     return
 
-
 if __name__ == '__main__':
     with open('data.txt', 'r', encoding='utf-8') as f:
         lyrics = f.readlines()
@@ -65,16 +71,21 @@ if __name__ == '__main__':
     cleaned_text = [clean_text(line) for line in lyrics]
     print(f"Cleaned text: {cleaned_text}")
 
-    phrases = [split_into_phrases(line) for line in cleaned_text]
-    print(f"Phrases: {phrases}")
+    add_themes_lyrics = [add_themes(line, themes) for line in cleaned_text]
 
-    pairs = create_pairs(phrases)
-    print(f"Pairs: {pairs}")
+    for lyrics in add_themes_lyrics:
+        print(lyrics)
 
-    tokenized_data_ = tokenize_text(pairs)
-    print(f"Tokenized text: {tokenized_data_}")
+    # pairs = add_themes(phrases, themes)
+    # print(f"Pairs: {pairs}")
 
-    train_data, test_data = train_test_split(tokenized_data_, test_size=0.2, random_state=42)
+    # tokenized_data_ = tokenize_text(pairs)
+    # print(f"Tokenized text: {tokenized_data_}")
 
-    save_data_to_pickle(train_data, test_data)
+    # with open('data_after_tokenize.pkl', 'wb') as f_save:
+    #     pickle.dump(tokenized_data_, f_save)
+    #
+    # train_data, test_data = train_test_split(tokenized_data_, test_size=0.2, random_state=42)
+    #
+    # save_data_to_pickle(train_data, test_data)
 
